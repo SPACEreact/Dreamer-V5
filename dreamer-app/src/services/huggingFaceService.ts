@@ -322,6 +322,13 @@ export class HuggingFaceService {
   isReady(): boolean {
     return this.isInitialized;
   }
+
+  // Cleanup method for disposing models
+  cleanup(): void {
+    this.textClassifier = null;
+    this.textSummarizer = null;
+    this.isInitialized = false;
+  }
 }
 
 // Export singleton instance

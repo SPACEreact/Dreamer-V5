@@ -1,0 +1,15 @@
+[build]
+  base = "dreamer-app"
+  command = "pnpm run build"
+  publish = "dist"
+
+[dev]
+  command = "pnpm run dev"
+  targetPort = 5173
+  framework = "#custom"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
