@@ -69,7 +69,7 @@ export const getAISuggestions = async (context: string, currentQuestion: string,
         const enhancedContext = `${context}\n\nNARRATIVE ANALYSIS (Local AI):\nGenre: ${narrativeAnalysis.genre}\nEmotional Tone: ${narrativeAnalysis.emotionalTone}\nVisual Cues: ${narrativeAnalysis.visualCues.join(', ')}\nNarrative Elements: ${narrativeAnalysis.narrativeElements.join(', ')}`;
 
         const response = await ai.models.generateContent({
-            model: API_CONFIG.GEMINI_MODEL,
+            model: 'gemini-2.0-flash-exp',
             contents: `You are Dreamer, a visionary cinematography AI. Your voice is poetic, insightful, and steeped in film theory.
             Your task is to provide 3-5 creative, professional suggestions for the current question.
             Critically analyze all the context provided (the user's script, their previous answers, the cinematic knowledge base, and the local AI narrative analysis).
@@ -83,7 +83,7 @@ export const getAISuggestions = async (context: string, currentQuestion: string,
             CURRENT QUESTION:
             "${currentQuestion}"`,
             config: {
-                thinkingConfig: { thinkingBudget: 32768 },
+                thinkingConfig: { thinkingBudget: 8192 },
             }
         });
 
@@ -186,7 +186,7 @@ export const getKnowledgeBasedSuggestions = async (
 export const enhanceShotPrompt = async (basePrompt: string, context: string): Promise<string> => {
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
+            model: 'gemini-2.0-flash-exp',
             contents: `You are a world-class cinematographer AI with a deep understanding of film theory and practice.
             Your task is to refine the following cinematic shot prompt.
             1.  Preserve all mission-critical technical settings from the base prompt (camera, lens, etc.).
@@ -201,7 +201,7 @@ export const enhanceShotPrompt = async (basePrompt: string, context: string): Pr
             BASE PROMPT:
             ${basePrompt}`,
             config: {
-                thinkingConfig: { thinkingBudget: 32768 },
+                thinkingConfig: { thinkingBudget: 8192 },
             },
         });
         return response.text;
@@ -214,10 +214,10 @@ export const enhanceShotPrompt = async (basePrompt: string, context: string): Pr
 export const generateStoryFromIdea = async (idea: string): Promise<string[]> => {
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
+            model: 'gemini-2.0-flash-exp',
             contents: `Based on this cinematic concept: "${idea}"\n\nGenerate 3-5 creative scene descriptions that expand this idea into vivid, director-level prompts. Each should be 1-2 sentences and capture mood, character, and visual atmosphere. Format them as separate paragraphs, separated by a double newline.`,
             config: {
-                thinkingConfig: { thinkingBudget: 32768 },
+                thinkingConfig: { thinkingBudget: 8192 },
             },
         });
         const content = response.text;
@@ -306,8 +306,9 @@ export const generateStoryboard = async (script: string, style: 'cinematic' | 'e
 
         const prompt = style === 'explainer' ? explainerPrompt : cinematicPrompt;
 
+        console.log('🎬 Starting storyboard generation with optimized settings...');
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
+            model: 'gemini-2.0-flash-exp',
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
@@ -330,7 +331,7 @@ export const generateStoryboard = async (script: string, style: 'cinematic' | 'e
                         }
                     }
                 },
-                thinkingConfig: { thinkingBudget: 32768 },
+                thinkingConfig: { thinkingBudget: 8192 },
             },
         });
         
@@ -473,9 +474,9 @@ export const generateVideoPrompt = async (
         contents.parts.push({ text: userPrompt });
         
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
+            model: 'gemini-2.0-flash-exp',
             contents: contents,
-            config: { thinkingConfig: { thinkingBudget: 32768 } },
+            config: { thinkingConfig: { thinkingBudget: 8192 } },
         });
 
         return response.text.trim();
@@ -488,7 +489,7 @@ export const generateVideoPrompt = async (
 export const getTimelineSuggestion = async (context: string): Promise<string> => {
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
+            model: 'gemini-2.0-flash-exp',
             contents: `You are Dreamer, an expert film editor AI grounded in cinematic theory (Walter Murch's Rule of Six, etc.). Analyze the provided storyboard context and suggest a professional, creative edit or transition.
             
             CONTEXT:
@@ -497,7 +498,7 @@ export const getTimelineSuggestion = async (context: string): Promise<string> =>
             Based on this, provide a single, actionable suggestion. For example: "Suggest a match cut from the character's hand to a similar shape in the next shot to create a strong visual link." or "A J-cut here would build anticipation before the reveal."
             
             Return only the suggestion.`,
-            config: { thinkingConfig: { thinkingBudget: 32768 } },
+            config: { thinkingConfig: { thinkingBudget: 4096 } },
         });
         return response.text.trim();
     } catch (error) {
@@ -509,7 +510,7 @@ export const getTimelineSuggestion = async (context: string): Promise<string> =>
 export const analyzeSequenceStyle = async (prompts: string[]): Promise<SequenceStyle> => {
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
+            model: 'gemini-2.0-flash-exp',
             contents: `Analyze the following cinematic shot prompts to determine the sequence's overall "Visual DNA".
             
             PROMPTS:
@@ -527,7 +528,7 @@ export const analyzeSequenceStyle = async (prompts: string[]): Promise<SequenceS
                     },
                     required: ["visualDNA", "colorPalette", "mood"],
                 },
-                thinkingConfig: { thinkingBudget: 32768 },
+                thinkingConfig: { thinkingBudget: 4096 },
             },
         });
         const jsonString = response.text.trim();
@@ -541,7 +542,7 @@ export const analyzeSequenceStyle = async (prompts: string[]): Promise<SequenceS
 export const generateBrollPrompt = async (context: string, style: SequenceStyle | null): Promise<string> => {
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
+            model: 'gemini-2.0-flash-exp',
             contents: `Generate a concise, cinematic B-roll or establishing shot prompt. It should be atmospheric and relevant to the surrounding scene context.
             
             CONTEXT OF SURROUNDING SHOTS:
@@ -726,7 +727,7 @@ export const generateSoundSuggestions = async (
 ): Promise<AudioSuggestion[]> => {
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
+            model: 'gemini-2.0-flash-exp',
             contents: `As a professional sound designer, suggest 5-7 specific sound elements for this cinematic scene.
 
 SCENE DESCRIPTION: ${sceneDescription}
@@ -760,7 +761,7 @@ Return as a JSON array.`,
                         }
                     }
                 },
-                thinkingConfig: { thinkingBudget: 16384 }
+                thinkingConfig: { thinkingBudget: 4096 }
             }
         });
         return JSON.parse(response.text.trim());
@@ -777,7 +778,7 @@ export const generateFoleySuggestions = async (
 ): Promise<FoleySuggestion[]> => {
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
+            model: 'gemini-2.0-flash-exp',
             contents: `As a professional foley artist, suggest specific sound effects for this scene.
 
 CHARACTERS: ${characters.join(', ')}
@@ -809,7 +810,7 @@ Return as a JSON array.`,
                         }
                     }
                 },
-                thinkingConfig: { thinkingBudget: 16384 }
+                thinkingConfig: { thinkingBudget: 4096 }
             }
         });
         return JSON.parse(response.text.trim());
@@ -830,7 +831,7 @@ export const analyzeCharacter = async (
 ): Promise<CharacterAnalysis> => {
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
+            model: 'gemini-2.0-flash-exp',
             contents: `As a professional casting director, analyze this character and provide detailed casting specifications.
 
 CHARACTER NAME: ${characterName}
@@ -867,7 +868,7 @@ Return as structured JSON.`,
                         actingStyle: { type: Type.ARRAY, items: { type: Type.STRING } }
                     }
                 },
-                thinkingConfig: { thinkingBudget: 32768 }
+                thinkingConfig: { thinkingBudget: 8192 }
             }
         });
         return JSON.parse(response.text.trim());
@@ -899,7 +900,7 @@ export const generateCastingSuggestions = async (
             : "";
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
+            model: 'gemini-2.0-flash-exp',
             contents: `As a professional casting director committed to inclusive casting, provide 5-6 diverse casting suggestions for this character.
 
 CHARACTER ANALYSIS:
@@ -939,7 +940,7 @@ Return as structured JSON with an array of suggestions.`,
                         }
                     }
                 },
-                thinkingConfig: { thinkingBudget: 32768 }
+                thinkingConfig: { thinkingBudget: 8192 }
             }
         });
         const result = JSON.parse(response.text.trim());
