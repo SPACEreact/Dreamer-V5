@@ -1,8 +1,8 @@
 // Supabase Client for Data Persistence
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://qfqekbteporzsuftybyj.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmcWVrYnRlcG9yenN1ZnR5YnlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5NjcyMjAsImV4cCI6MjA3NzU0MzIyMH0.fa8DXmqNYNUX3OA-XID8IxP8oUlukixql1aJVQTbPbA';
+const supabaseUrl = 'https://etdopfjlgpdhcjjyirvd.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0ZG9wZmpsZ3BkaGNqanlpcnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5ODM4NjEsImV4cCI6MjA3NzU1OTg2MX0.a_gBdqeIsDZ2onrWk7Bi27mJjajthUof1tUCvrnJKMM';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
