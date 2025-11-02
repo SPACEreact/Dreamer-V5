@@ -1,0 +1,82 @@
+--- a/App.tsx
++++ b/App.tsx
+@@ -481,11 +481,25 @@ const ColorGradingEditor = React.memo<ColorGradingEditorProps>(({ color, onChange }) => {
+     // Memoize palette change handler to prevent unnecessary re-renders
+-    const handlePaletteChange = (index: number, value: string) => { const next = [...color.colorPalette]; next[index] = value; onChange('colorPalette', next); };
+-    const updateTone = (field: keyof ColorGradingData, value: number) => onChange(field, Math.max(-50, Math.min(50, value)));
++    const handlePaletteChange = useCallback((index: number, value: string) => {
++        const next = [...color.colorPalette];
++        next[index] = value;
++        onChange('colorPalette', next);
++    }, [color.colorPalette, onChange]);
++
++    // Memoize tone update function
++    const updateTone = useCallback((field: keyof ColorGradingData, value: number) => {
++        onChange(field, Math.max(-50, Math.min(50, value)));
++    }, [onChange]);
++
++    // Memoize reset function
++    const handleReset = useCallback(() => {
++        onChange('colorGrade', 'Dreamer Grade');
++        onChange('saturation', 10);
++        onChange('contrast', 5);
++        onChange('highlights', 5);
++        onChange('shadows', -5);
++        onChange('colorPalette', ['#0F172A', '#1E293B', '#475569', '#F97316', '#FBBF24', '#FDE68A', '#38BDF8', '#A855F7']);
++        onChange('colorHarmony', colorHarmonyOptions[0]);
++    }, [onChange]);
++
+     return (
+       <div className="space-y-4">
+         <div className="flex items-center justify-between">
+@@ -493,7 +507,7 @@ const ColorGradingEditor = React.memo<ColorGradingEditorProps>(({ color, onChange }) => {
+           <div><h3 className="text-lg font-semibold text-amber-400">Color Grading Deck</h3><p className="text-sm text-gray-400">Shape palette, contrast, saturation, and harmony.</p></div>
+-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => { onChange('colorGrade', 'Dreamer Grade'); onChange('saturation', 10); onChange('contrast', 5); onChange('highlights', 5); onChange('shadows', -5); onChange('colorPalette', ['#0F172A', '#1E293B', '#475569', '#F97316', '#FBBF24', '#FDE68A', '#38BDF8', '#A855F7']); onChange('colorHarmony', colorHarmonyOptions[0]); }} className="px-3 py-2 text-sm rounded-lg bg-gray-800 hover:bg-gray-700">Reset Color</motion.button>
++          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleReset} className="px-3 py-2 text-sm rounded-lg bg-gray-800 hover:bg-gray-700">Reset Color</motion.button>
+         </div>
+         <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 space-y-3"><label className="text-xs text-gray-400 uppercase">Grade Name</label><input value={color.colorGrade} onChange={(event) => onChange('colorGrade', event.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-amber-500" /></div>
+         <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 space-y-3"><label className="text-xs text-gray-400 uppercase">Color Harmony</label><select value={color.colorHarmony} onChange={(event) => onChange('colorHarmony', event.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-amber-500">{colorHarmonyOptions.map(option => <option key={option} value={option}>{option}</option>)}</select></div>
+@@ -516,11 +540,27 @@ const CameraMovementEditor = React.memo<CameraMovementEditorProps>(({ camera, onChange, onPathChange }) => {
+     // Memoize update function to prevent unnecessary re-renders
+-    const updateMovement = (field: keyof CameraMovementData, value: number | string) => onChange(field, value);
++    const updateMovement = useCallback((field: keyof CameraMovementData, value: number | string) => onChange(field, value), [onChange]);
++
++    // Memoize path change handler
++    const handlePathChange = useCallback((key: 'startPos' | 'endPos', coord: 'x' | 'y', value: number) => {
++        onPathChange(key, coord, value);
++    }, [onPathChange]);
++
++    // Memoize reset function
++    const handleReset = useCallback(() => {
++        onChange('movementType', movementTypes[0]);
++        onChange('duration', 5);
++        onChange('easing', 'ease-in-out');
++        onChange('focalLength', 35);
++        handlePathChange('startPos', 'x', 100);
++        handlePathChange('startPos', 'y', 300);
++        handlePathChange('endPos', 'x', 700);
++        handlePathChange('endPos', 'y', 150);
++    }, [onChange, handlePathChange]);
++
+     return (
+       <div className="space-y-4">
+         <div className="flex items-center justify-between">
+           <div><h3 className="text-lg font-semibold text-amber-400">Camera Motion Lab</h3><p className="text-sm text-gray-400">Define movement, path, easing, and focal rhythm.</p></div>
+-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => { onChange('movementType', movementTypes[0]); onChange('duration', 5); onChange('easing', 'ease-in-out'); onChange('focalLength', 35); onPathChange('startPos', 'x', 100); onPathChange('startPos', 'y', 300); onPathChange('endPos', 'x', 700); onPathChange('endPos', 'y', 150); }} className="px-3 py-2 text-sm rounded-lg bg-gray-800 hover:bg-gray-700">Reset Motion</motion.button>
++          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleReset} className="px-3 py-2 text-sm rounded-lg bg-gray-800 hover:bg-gray-700">Reset Motion</motion.button>
+         </div>
+         <div className="grid md:grid-cols-2 gap-4">
+           <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 space-y-3"><label className="text-xs text-gray-400 uppercase">Movement Type</label><select value={camera.movementType} onChange={(event) => updateMovement('movementType', event.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-amber-500">{movementTypes.map(option => <option key={option} value={option}>{option}</option>)}</select></div>
+@@ -530,8 +570,8 @@ const CameraMovementEditor = React.memo<CameraMovementEditorProps>(({ camera, onChange, onPathChange }) => {
+           <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 space-y-3"><label className="text-xs text-gray-400 uppercase">Easing</label><select value={camera.easing} onChange={(event) => updateMovement('easing', event.target.value as CameraEasing)} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-amber-500">{easingOptions.map(option => <option key={option} value={option}>{option}</option>)}</select></div>
+           <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 space-y-3"><label className="text-xs text-gray-400 uppercase">Focal Length (mm)</label><input type="number" value={camera.focalLength} onChange={(event) => updateMovement('focalLength', Number(event.target.value))} min={10} max={200} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-amber-500" /></div>
+         </div>
+-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 space-y-4">
++        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 space-y-4">
+           <h4 className="text-sm font-semibold text-amber-400 uppercase">Path Coordinates</h4>
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm text-gray-400">
+-            {(['x', 'y'] as const).map(coord => <div key={`start-${coord}`} className="space-y-1"><label className="text-xs uppercase">Start {coord.toUpperCase()}</label><input type="number" value={camera.startPos[coord]} onChange={(event) => onPathChange('startPos', coord, Number(event.target.value))} min={0} max={800} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-amber-500" /></div>)}
+-            {(['x', 'y'] as const).map(coord => <div key={`end-${coord}`} className="space-y-1"><label className="text-xs uppercase">End {coord.toUpperCase()}</label><input type="number" value={camera.endPos[coord]} onChange={(event) => onPathChange('endPos', coord, Number(event.target.value))} min={0} max={800} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-amber-500" /></div>)}
++            {(['x', 'y'] as const).map(coord => <div key={`start-${coord}`} className="space-y-1"><label className="text-xs uppercase">Start {coord.toUpperCase()}</label><input type="number" value={camera.startPos[coord]} onChange={(event) => handlePathChange('startPos', coord, Number(event.target.value))} min={0} max={800} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-amber-500" /></div>)}
++            {(['x', 'y'] as const).map(coord => <div key={`end-${coord}`} className="space-y-1"><label className="text-xs uppercase">End {coord.toUpperCase()}</label><input type="number" value={camera.endPos[coord]} onChange={(event) => handlePathChange('endPos', coord, Number(event.target.value))} min={0} max={800} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-amber-500" /></div>)}
+           </div>

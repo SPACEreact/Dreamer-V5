@@ -1,0 +1,19 @@
+# Tauri ignore file
+# Files and directories to exclude from the Tauri bundle
+
+.git
+.github
+.vscode
+node_modules
+.pnpm-store
+.vite-temp
+.env.local
+.env.development
+*.log
+*.md
+!README.md
+.eslintrc*
+.gitignore
+.prettierrc*
+tsconfig.json
+vite.config.ts

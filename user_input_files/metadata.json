@@ -1,0 +1,5 @@
+{
+  "name": "Dreamer: Cinematic Prompt Builder",
+  "description": "A director-level prompt system where an adaptive cinematography intelligence interviews you, weaves in knowledge-base intuition, and assembles emotionally coherent multi-shot sequences for generative AI.",
+  "requestFramePermissions": []
+}
