@@ -3189,10 +3189,10 @@ export default function App() {
         }
         
         try {
-            setCompositions(prev => ({ ...prev, [timelineItemId]: clone(preset.composition) }));
-            setLightingData(prev => ({ ...prev, [timelineItemId]: clone(preset.lighting) }));
-            setColorGradingData(prev => ({ ...prev, [timelineItemId]: clone(preset.color) }));
-            setCameraMovement(prev => ({ ...prev, [timelineItemId]: clone(preset.camera) }));
+            setCompositions(prev => ({ ...prev, [timelineItemId]: clone(preset.composition) as CompositionData }));
+            setLightingData(prev => ({ ...prev, [timelineItemId]: clone(preset.lighting) as LightingData }));
+            setColorGradingData(prev => ({ ...prev, [timelineItemId]: clone(preset.color) as ColorGradingData }));
+            setCameraMovement(prev => ({ ...prev, [timelineItemId]: clone(preset.camera) as CameraMovementData }));
             appLogger.info('Preset applied successfully to timeline item:', timelineItemId);
         } catch (error) {
             appLogger.error('Failed to apply preset:', error);
@@ -3361,7 +3361,7 @@ export default function App() {
             deleteTimelineItem={deleteTimelineItem}
             showCollaboration={false}
             setShowCollaboration={() => {}}
-        />;
+        /></ErrorBoundary>;
     }
     
     return null; // Fallback - should not reach here
